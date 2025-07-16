@@ -20,32 +20,48 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
+        console.log('🔐 Authentication attempt:', { email: credentials?.email })
+        
         if (!credentials?.email || !credentials?.password) {
+          console.log('❌ Missing credentials')
           return null
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        })
+        try {
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+          })
 
-        if (!user || !user.password) {
+          console.log('👤 User found:', user ? 'YES ✅' : 'NO ❌')
+          console.log('🔑 User has password:', user?.password ? 'YES ✅' : 'NO ❌')
+
+          if (!user || !user.password) {
+            console.log('❌ User not found or no password')
+            return null
+          }
+
+          const isValidPassword = await bcrypt.compare(
+            credentials.password,
+            user.password
+          )
+
+          console.log('🔓 Password valid:', isValidPassword ? 'YES ✅' : 'NO ❌')
+
+          if (!isValidPassword) {
+            console.log('❌ Invalid password')
+            return null
+          }
+
+          console.log('✅ Authentication successful for:', user.email)
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          }
+        } catch (error) {
+          console.error('💥 Authentication error:', error)
           return null
-        }
-
-        const isValidPassword = await bcrypt.compare(
-          credentials.password,
-          user.password
-        )
-
-        if (!isValidPassword) {
-          return null
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
         }
       },
     }),

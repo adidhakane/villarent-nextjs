@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     // Validate input
     const validatedData = villaRegistrationSchema.parse(body)
     
-    // Create villa - handle both string and array formats
+    // Create villa - convert arrays to JSON strings for current schema
     const villaData = {
       name: validatedData.name,
       description: validatedData.description,
@@ -49,14 +49,12 @@ export async function POST(request: NextRequest) {
       maxGuests: validatedData.maxGuests,
       bedrooms: validatedData.bedrooms,
       bathrooms: validatedData.bathrooms,
-      amenities: Array.isArray(validatedData.amenities) 
-        ? validatedData.amenities 
-        : JSON.stringify(validatedData.amenities), // Fallback to string if schema expects string
+      amenities: JSON.stringify(validatedData.amenities), // Convert array to JSON string
       pricePerNight: validatedData.pricePerNight,
       ownerId: session.user.id,
       isApproved: false,
       isActive: true,
-      images: [] // Empty array for now
+      images: JSON.stringify([]) // Convert empty array to JSON string
     }
 
     console.log('🏠 Creating villa with data:', villaData)

@@ -2,8 +2,16 @@
 export function transformVillaForAPI(villa: Record<string, unknown>) {
   return {
     ...villa,
-    amenities: villa.amenities ? JSON.parse(villa.amenities as string) : [],
-    images: villa.images ? JSON.parse(villa.images as string) : []
+    amenities: Array.isArray(villa.amenities) 
+      ? villa.amenities 
+      : villa.amenities 
+        ? JSON.parse(villa.amenities as string) 
+        : [],
+    images: Array.isArray(villa.images) 
+      ? villa.images 
+      : villa.images 
+        ? JSON.parse(villa.images as string) 
+        : []
   }
 }
 

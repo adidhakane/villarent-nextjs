@@ -17,63 +17,46 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     
-    console.log('📝 Raw body received:', body)
-    console.log('🔍 Amenities type:', typeof body.amenities)
-    console.log('🔍 Amenities value:', body.amenities)
-    
     // Ensure amenities is an array
     if (Array.isArray(body.amenities)) {
-      console.log('✅ Amenities is already an array')
+      // Already an array, good!
     } else if (typeof body.amenities === 'string') {
       try {
         const parsed = JSON.parse(body.amenities)
         if (Array.isArray(parsed)) {
           body.amenities = parsed
-          console.log('✅ Parsed amenities from JSON string:', body.amenities)
         } else {
-          // Single string value, convert to array
           body.amenities = [body.amenities]
-          console.log('✅ Converted single amenity to array:', body.amenities)
         }
       } catch (e) {
-        console.log('❌ Failed to parse amenities as JSON, treating as single item')
         body.amenities = [body.amenities]
       }
     } else {
-      console.log('⚠️ Amenities is neither array nor string, defaulting to empty array')
       body.amenities = []
     }
     
     // Ensure images is an array
     if (Array.isArray(body.images)) {
-      console.log('✅ Images is already an array')
+      // Already an array, good!
     } else if (typeof body.images === 'string') {
       try {
         const parsed = JSON.parse(body.images)
         if (Array.isArray(parsed)) {
           body.images = parsed
-          console.log('✅ Parsed images from JSON string:', body.images)
         } else {
           body.images = []
-          console.log('✅ Images was string but not array, using empty array')
         }
       } catch (e) {
-        console.log('❌ Failed to parse images, using empty array')
         body.images = []
       }
     } else {
-      console.log('⚠️ Images not provided or invalid, using empty array')
       body.images = []
     }
-    
-    console.log('📋 Processed body before validation:', body)
     
     // Validate input
     const validatedData = villaRegistrationSchema.parse(body)
     
-    console.log('✅ Validated data:', validatedData)
-    
-    // Create villa - use arrays directly (PostgreSQL arrays)
+    // Create villa data
     const villaData = {
       name: validatedData.name,
       description: validatedData.description,
@@ -82,18 +65,16 @@ export async function POST(request: NextRequest) {
       maxGuests: validatedData.maxGuests,
       bedrooms: validatedData.bedrooms,
       bathrooms: validatedData.bathrooms,
-      amenities: validatedData.amenities, // Should be array after validation
+      amenities: validatedData.amenities,
       pricePerNight: validatedData.pricePerNight,
       ownerId: session.user.id,
       isApproved: false,
       isActive: true,
-      images: [] // Empty array for PostgreSQL
+      images: []
     }
 
-    console.log('🏠 Creating villa with data:', villaData)
-
     const villa = await prisma.villa.create({
-      data: villaData as any, // Type assertion to bypass schema mismatch
+      data: villaData as any, // Type assertion needed due to Prisma schema mismatch with PostgreSQL arrays
       include: {
         owner: {
           select: {

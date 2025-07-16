@@ -6,8 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -75,8 +76,8 @@ model Villa {
   maxGuests   Int
   bedrooms    Int
   bathrooms   Int
-  amenities   String // JSON string of amenities
-  images      String // JSON string of image URLs
+  amenities   String[] // Array of amenities
+  images      String[] // Array of image URLs
   pricePerNight Float
   ownerId     String
   isApproved  Boolean  @default(false)

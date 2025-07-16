@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && prisma db push && next build",
+    "postbuild": "node -e \"console.log('✅ Build complete with database setup')\"",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",

@@ -17,11 +17,17 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     
+    console.log('📝 Raw body received:', body)
+    console.log('🔍 Amenities type:', typeof body.amenities)
+    console.log('🔍 Amenities value:', body.amenities)
+    
     // Parse amenities if it's a JSON string
     if (typeof body.amenities === 'string') {
       try {
         body.amenities = JSON.parse(body.amenities)
+        console.log('✅ Parsed amenities:', body.amenities)
       } catch (e) {
+        console.log('❌ Failed to parse amenities, treating as single item')
         // If parsing fails, treat as single amenity
         body.amenities = [body.amenities]
       }
@@ -31,14 +37,20 @@ export async function POST(request: NextRequest) {
     if (typeof body.images === 'string') {
       try {
         body.images = JSON.parse(body.images)
+        console.log('✅ Parsed images:', body.images)
       } catch (e) {
+        console.log('❌ Failed to parse images, using empty array')
         // If parsing fails, default to empty array
         body.images = []
       }
     }
     
+    console.log('📋 Processed body before validation:', body)
+    
     // Validate input
     const validatedData = villaRegistrationSchema.parse(body)
+    
+    console.log('✅ Validated data:', validatedData)
     
     // Create villa - use arrays directly (PostgreSQL arrays)
     const villaData = {
@@ -49,7 +61,7 @@ export async function POST(request: NextRequest) {
       maxGuests: validatedData.maxGuests,
       bedrooms: validatedData.bedrooms,
       bathrooms: validatedData.bathrooms,
-      amenities: validatedData.amenities, // Use array directly for PostgreSQL
+      amenities: validatedData.amenities, // Should be array after validation
       pricePerNight: validatedData.pricePerNight,
       ownerId: session.user.id,
       isApproved: false,

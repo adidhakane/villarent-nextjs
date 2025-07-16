@@ -5,6 +5,11 @@
     }
   },
   "env": {
-    "NEXTAUTH_URL": "https://your-app-name.vercel.app"
+    "NEXTAUTH_URL": "https://your-domain.vercel.app"
+  },
+  "build": {
+    "env": {
+      "DATABASE_URL": "file:./dev.db"
+    }
   }
 }

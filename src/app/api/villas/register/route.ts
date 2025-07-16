@@ -30,12 +30,12 @@ export async function POST(request: NextRequest) {
         maxGuests: validatedData.maxGuests,
         bedrooms: validatedData.bedrooms,
         bathrooms: validatedData.bathrooms,
-        amenities: JSON.stringify(validatedData.amenities),
+        amenities: validatedData.amenities, // Use array directly
         pricePerNight: validatedData.pricePerNight,
         ownerId: session.user.id,
         isApproved: false, // Requires admin approval
         isActive: true,
-        images: JSON.stringify([]) // Will be added later via image upload
+        images: [] // Empty array, will be added later via image upload
       },
       include: {
         owner: {
@@ -58,16 +58,21 @@ export async function POST(request: NextRequest) {
     )
   } catch (error) {
     console.error('Villa registration error:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      name: error instanceof Error ? error.name : 'Unknown'
+    })
     
     if (error instanceof Error && error.name === 'ZodError') {
       return NextResponse.json(
-        { error: 'Invalid input data' },
+        { error: 'Invalid input data', details: error.message },
         { status: 400 }
       )
     }
     
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }

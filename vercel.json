@@ -4,9 +4,6 @@
       "maxDuration": 30
     }
   },
-  "env": {
-    "NEXTAUTH_URL": "https://your-domain.vercel.app"
-  },
   "build": {
     "env": {
       "DATABASE_URL": "file:./dev.db"

@@ -17,26 +17,52 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     
+    // Parse amenities if it's a JSON string
+    if (typeof body.amenities === 'string') {
+      try {
+        body.amenities = JSON.parse(body.amenities)
+      } catch (e) {
+        // If parsing fails, treat as single amenity
+        body.amenities = [body.amenities]
+      }
+    }
+    
+    // Parse images if it's a JSON string
+    if (typeof body.images === 'string') {
+      try {
+        body.images = JSON.parse(body.images)
+      } catch (e) {
+        // If parsing fails, default to empty array
+        body.images = []
+      }
+    }
+    
     // Validate input
     const validatedData = villaRegistrationSchema.parse(body)
     
-    // Create villa
+    // Create villa - handle both string and array formats
+    const villaData = {
+      name: validatedData.name,
+      description: validatedData.description,
+      location: validatedData.location,
+      address: validatedData.address,
+      maxGuests: validatedData.maxGuests,
+      bedrooms: validatedData.bedrooms,
+      bathrooms: validatedData.bathrooms,
+      amenities: Array.isArray(validatedData.amenities) 
+        ? validatedData.amenities 
+        : JSON.stringify(validatedData.amenities), // Fallback to string if schema expects string
+      pricePerNight: validatedData.pricePerNight,
+      ownerId: session.user.id,
+      isApproved: false,
+      isActive: true,
+      images: [] // Empty array for now
+    }
+
+    console.log('🏠 Creating villa with data:', villaData)
+
     const villa = await prisma.villa.create({
-      data: {
-        name: validatedData.name,
-        description: validatedData.description,
-        location: validatedData.location,
-        address: validatedData.address,
-        maxGuests: validatedData.maxGuests,
-        bedrooms: validatedData.bedrooms,
-        bathrooms: validatedData.bathrooms,
-        amenities: validatedData.amenities, // Use array directly
-        pricePerNight: validatedData.pricePerNight,
-        ownerId: session.user.id,
-        isApproved: false, // Requires admin approval
-        isActive: true,
-        images: [] // Empty array, will be added later via image upload
-      },
+      data: villaData,
       include: {
         owner: {
           select: {

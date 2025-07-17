@@ -72,11 +72,11 @@ export default function SignInPage() {
             <CardDescription>Sign in to manage your villas</CardDescription>
             
             {/* Demo credentials */}
-            <div className="bg-blue-50 p-3 rounded-md text-sm">
+            {/* <div className="bg-blue-50 p-3 rounded-md text-sm">
               <p className="font-medium text-blue-900 mb-2">Demo Credentials:</p>
               <p className="text-blue-800">Admin: admin@example.com / admin123</p>
               <p className="text-blue-800">Owner: owner@example.com / owner123</p>
-            </div>
+            </div> */}
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">

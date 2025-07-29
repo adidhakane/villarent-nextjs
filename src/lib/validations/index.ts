@@ -9,8 +9,27 @@ export const villaRegistrationSchema = z.object({
   maxGuests: z.number().min(1, 'Must accommodate at least 1 guest').max(50, 'Too many guests'),
   bedrooms: z.number().min(1, 'Must have at least 1 bedroom').max(20, 'Too many bedrooms'),
   bathrooms: z.number().min(1, 'Must have at least 1 bathroom').max(20, 'Too many bathrooms'),
-  amenities: z.array(z.string()).min(1, 'At least one amenity is required'),
+  amenities: z.array(z.string()).min(1, 'Please select at least one amenity'),
   pricePerNight: z.number().min(100, 'Price must be at least ₹100').max(100000, 'Price too high'),
+  
+  // New fields
+  ownerPhone: z.string().min(10, 'Phone number must be at least 10 digits').max(15, 'Phone number too long'),
+  ownerEmail: z.string().email('Invalid email address'),
+  weekdayPrice: z.number().min(100, 'Weekday price must be at least ₹100').max(100000, 'Price too high').optional(),
+  fridayPrice: z.number().min(100, 'Friday price must be at least ₹100').max(100000, 'Price too high').optional(),
+  saturdayPrice: z.number().min(100, 'Saturday price must be at least ₹100').max(100000, 'Price too high').optional(),
+  sundayPrice: z.number().min(100, 'Sunday price must be at least ₹100').max(100000, 'Price too high').optional(),
+  checkInTime: z.string().optional(),
+  checkOutTime: z.string().optional(),
+  
+  // Admin fields (optional)
+  adminWeekdayPrice: z.number().min(100, 'Admin weekday price must be at least ₹100').max(100000, 'Price too high').optional(),
+  adminSaturdayPrice: z.number().min(100, 'Admin Saturday price must be at least ₹100').max(100000, 'Price too high').optional(),
+  adminSundayPrice: z.number().min(100, 'Admin Sunday price must be at least ₹100').max(100000, 'Price too high').optional(),
+  googleDriveLink: z.string().url('Invalid Google Drive URL').optional().or(z.literal('')),
+  
+  // Images array (for future use)
+  images: z.array(z.string()).optional().default([])
 })
 
 // Villa search schema

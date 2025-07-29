@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns'
 import { Button } from '@/components/ui/button'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, RefreshCw } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface Villa {
@@ -46,10 +46,17 @@ export function VillaCalendar({ villa, onUpdate }: VillaCalendarProps) {
   const [calendarDates, setCalendarDates] = useState<CalendarDate[]>([])
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [showDateModal, setShowDateModal] = useState(false)
+  const [lastUpdated, setLastUpdated] = useState(Date.now())
 
   useEffect(() => {
     generateCalendarDates()
-  }, [currentDate, villa])
+  }, [currentDate, villa, lastUpdated])
+
+  // Force refresh function
+  const forceRefresh = () => {
+    setLastUpdated(Date.now())
+    onUpdate()
+  }
 
   const generateCalendarDates = () => {
     const monthStart = startOfMonth(currentDate)
@@ -103,7 +110,7 @@ export function VillaCalendar({ villa, onUpdate }: VillaCalendarProps) {
       })
 
       if (response.ok) {
-        onUpdate()
+        forceRefresh()
         setShowDateModal(false)
       }
     } catch (error) {
@@ -123,7 +130,7 @@ export function VillaCalendar({ villa, onUpdate }: VillaCalendarProps) {
       })
 
       if (response.ok) {
-        onUpdate()
+        forceRefresh()
         setShowDateModal(false)
       }
     } catch (error) {
@@ -156,7 +163,8 @@ export function VillaCalendar({ villa, onUpdate }: VillaCalendarProps) {
   return (
     <div className="space-y-4">
       {/* Calendar Header */}
-      <div className="flex items-center justify-between">
+            {/* Calendar header */}
+      <div className="flex items-center justify-between mb-4">
         <Button
           variant="outline"
           size="sm"
@@ -165,9 +173,20 @@ export function VillaCalendar({ villa, onUpdate }: VillaCalendarProps) {
           <ChevronLeft className="h-4 w-4" />
         </Button>
         
-        <h3 className="text-lg font-semibold">
-          {format(currentDate, 'MMMM yyyy')}
-        </h3>
+        <div className="flex items-center gap-4">
+          <h3 className="text-lg font-semibold">
+            {format(currentDate, 'MMMM yyyy')}
+          </h3>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={forceRefresh}
+            title="Refresh calendar"
+          >
+            <RefreshCw className="h-4 w-4" />
+          </Button>
+        </div>
         
         <Button
           variant="outline"

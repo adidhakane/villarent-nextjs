@@ -1,4 +1,11 @@
-import { User, Villa, Booking, UserRole, BookingStatus } from '@prisma/client'
+import { User, Villa, Booking, BookingStatus } from '@prisma/client'
+
+// Define Role enum manually since Prisma client is not generating properly
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  VILLA_OWNER = 'VILLA_OWNER',
+  GUEST = 'GUEST'
+}
 
 // Extended User type with relations
 export type UserWithVillas = User & {
@@ -109,4 +116,4 @@ export interface Location {
   popular: boolean
 }
 
-export { UserRole, BookingStatus }
+export { BookingStatus }

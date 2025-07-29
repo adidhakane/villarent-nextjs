@@ -7,8 +7,11 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { CheckCircle, XCircle, Clock, MapPin, Users, DollarSign, Calendar } from 'lucide-react'
+import { CheckCircle, XCircle, Clock, MapPin, Users, DollarSign, Calendar, Plus, Check, Edit } from 'lucide-react'
 import { VillaCalendar } from '@/components/calendar/VillaCalendar'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 interface Villa {
   id: string
@@ -50,6 +53,12 @@ interface AdminStats {
   totalRevenue: number
 }
 
+interface Location {
+  id: string
+  name: string
+  createdAt: string
+}
+
 export default function AdminDashboard() {
   const { data: session, status } = useSession()
   const router = useRouter()
@@ -62,6 +71,13 @@ export default function AdminDashboard() {
   })
   const [selectedVilla, setSelectedVilla] = useState<Villa | null>(null)
   const [loading, setLoading] = useState(true)
+  
+  // Location management state
+  const [locations, setLocations] = useState<Location[]>([])
+  const [locationName, setLocationName] = useState('')
+  const [locationLoading, setLocationLoading] = useState(false)
+  const [locationError, setLocationError] = useState('')
+  const [locationSuccess, setLocationSuccess] = useState('')
 
   useEffect(() => {
     if (status === 'loading') return
@@ -72,6 +88,7 @@ export default function AdminDashboard() {
     }
 
     fetchAdminData()
+    fetchLocations()
   }, [session, status, router])
 
   const fetchAdminData = async () => {
@@ -92,6 +109,53 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Location management functions
+  const fetchLocations = async () => {
+    try {
+      const response = await fetch('/api/admin/locations')
+      if (response.ok) {
+        const data = await response.json()
+        setLocations(data.locations)
+      }
+    } catch (error) {
+      console.error('Failed to fetch locations:', error)
+    }
+  }
+
+  const handleAddLocation = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!locationName.trim()) {
+      setLocationError('Location name is required')
+      return
+    }
+
+    setLocationLoading(true)
+    setLocationError('')
+    setLocationSuccess('')
+
+    try {
+      const response = await fetch('/api/admin/locations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: locationName.trim() })
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setLocationSuccess('Location added successfully!')
+        setLocationName('')
+        fetchLocations() // Refresh the list
+      } else {
+        setLocationError(data.error || 'Failed to add location')
+      }
+    } catch (error) {
+      setLocationError('Something went wrong. Please try again.')
+    }
+
+    setLocationLoading(false)
   }
 
   const handleApprovalChange = async (villaId: string, isApproved: boolean) => {
@@ -142,6 +206,10 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Error updating villa status:', error)
     }
+  }
+
+  const handleEditVilla = (villaId: string) => {
+    router.push(`/admin/villas/${villaId}/edit`)
   }
 
   if (loading) {
@@ -211,7 +279,7 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs defaultValue="pending" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="pending">
               Pending Approvals ({pendingVillas.length})
             </TabsTrigger>
@@ -223,6 +291,9 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger value="all">
               All Villas ({villas.length})
+            </TabsTrigger>
+            <TabsTrigger value="add-location">
+              Add Location
             </TabsTrigger>
           </TabsList>
 
@@ -260,6 +331,7 @@ export default function AdminDashboard() {
                   key={villa.id}
                   villa={villa}
                   onStatusChange={(isActive) => handleActiveStatusChange(villa.id, isActive)}
+                  onEdit={() => handleEditVilla(villa.id)}
                   showApprovalActions={false}
                 />
               ))}
@@ -330,6 +402,83 @@ export default function AdminDashboard() {
               ))}
             </div>
           </TabsContent>
+
+          <TabsContent value="add-location" className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Add Location Form */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Plus className="h-5 w-5 mr-2" />
+                    Add New Location
+                  </CardTitle>
+                  <CardDescription>
+                    Add new villa locations that will appear in the location dropdown when adding or filtering villas.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleAddLocation} className="space-y-4">
+                    {locationError && (
+                      <Alert variant="destructive">
+                        <AlertDescription>{locationError}</AlertDescription>
+                      </Alert>
+                    )}
+                    
+                    {locationSuccess && (
+                      <Alert className="border-green-200 bg-green-50">
+                        <Check className="h-4 w-4 text-green-600" />
+                        <AlertDescription className="text-green-800">{locationSuccess}</AlertDescription>
+                      </Alert>
+                    )}
+
+                    <div>
+                      <Label htmlFor="locationName">Location Name *</Label>
+                      <Input
+                        id="locationName"
+                        value={locationName}
+                        onChange={(e) => setLocationName(e.target.value)}
+                        placeholder="e.g., Manali"
+                        required
+                      />
+                    </div>
+
+                    <Button type="submit" disabled={locationLoading} className="w-full">
+                      {locationLoading ? 'Adding...' : 'Add Location'}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+
+              {/* Existing Locations */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Existing Locations ({locations.length})</CardTitle>
+                  <CardDescription>
+                    Currently available locations in the system.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {locations.length === 0 ? (
+                      <p className="text-gray-500 text-center py-4">No locations added yet.</p>
+                    ) : (
+                      locations.map((location) => (
+                        <div key={location.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center">
+                            <MapPin className="h-4 w-4 text-gray-500 mr-2" />
+                            <span className="font-medium">{location.name}</span>
+                          </div>
+                          <span className="text-xs text-gray-500">
+                            {new Date(location.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
@@ -341,10 +490,11 @@ interface VillaCardProps {
   onApprove?: () => void
   onReject?: () => void
   onStatusChange?: (isActive: boolean) => void
+  onEdit?: () => void
   showApprovalActions?: boolean
 }
 
-function VillaCard({ villa, onApprove, onReject, onStatusChange, showApprovalActions }: VillaCardProps) {
+function VillaCard({ villa, onApprove, onReject, onStatusChange, onEdit, showApprovalActions }: VillaCardProps) {
   return (
     <Card>
       <CardHeader>
@@ -426,6 +576,18 @@ function VillaCard({ villa, onApprove, onReject, onStatusChange, showApprovalAct
                   Reject
                 </Button>
               </>
+            )}
+            
+            {onEdit && (
+              <Button
+                onClick={onEdit}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Edit className="h-4 w-4" />
+                Edit
+              </Button>
             )}
             
             {onStatusChange && (

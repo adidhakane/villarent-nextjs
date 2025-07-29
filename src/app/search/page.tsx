@@ -20,8 +20,18 @@ interface Villa {
   bedrooms: number
   bathrooms: number
   pricePerNight: number
+  // Owner pricing (not displayed to users)
+  weekdayPrice?: number
+  fridayPrice?: number
+  saturdayPrice?: number
+  sundayPrice?: number
+  // Admin pricing (displayed to users)
+  adminWeekdayPrice?: number
+  adminSaturdayPrice?: number
+  adminSundayPrice?: number
   amenities: string[]
   images: string[]
+  googleDriveLink?: string
   owner: {
     name: string
     email: string
@@ -33,11 +43,54 @@ function SearchContent() {
   const [villas, setVillas] = useState<Villa[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedVillas, setSelectedVillas] = useState<string[]>([])
+  const [filters, setFilters] = useState({
+    bhk: [] as string[], // 3BHK, 4BHK filter
+    priceRange: 'all' as string,
+    amenities: [] as string[]
+  })
 
   const location = searchParams.get('location')
   const checkIn = searchParams.get('checkIn')
   const checkOut = searchParams.get('checkOut')
   const guests = searchParams.get('guests')
+
+  // Function to get the appropriate price based on check-in date
+  const getPriceForDate = (villa: Villa, dateString: string) => {
+    const date = new Date(dateString)
+    const dayOfWeek = date.getDay() // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+    
+    // Priority: Admin prices > Owner prices > Base price
+    if (dayOfWeek === 5) { // Friday
+      return villa.adminSaturdayPrice || villa.fridayPrice || villa.pricePerNight
+    } else if (dayOfWeek === 6) { // Saturday  
+      return villa.adminSaturdayPrice || villa.saturdayPrice || villa.pricePerNight
+    } else if (dayOfWeek === 0) { // Sunday
+      return villa.adminSundayPrice || villa.sundayPrice || villa.pricePerNight
+    } else { // Monday to Thursday (weekdays)
+      return villa.adminWeekdayPrice || villa.weekdayPrice || villa.pricePerNight
+    }
+  }
+
+  // Function to check if admin pricing is being used
+  const isAdminPricing = (villa: Villa, dateString: string) => {
+    const date = new Date(dateString)
+    const dayOfWeek = date.getDay()
+    
+    if (dayOfWeek === 5 || dayOfWeek === 6) { // Friday or Saturday
+      return !!villa.adminSaturdayPrice
+    } else if (dayOfWeek === 0) { // Sunday
+      return !!villa.adminSundayPrice
+    } else { // Monday to Thursday (weekdays)
+      return !!villa.adminWeekdayPrice
+    }
+  }
+
+  // Function to get day name from date string
+  const getDayName = (dateString: string) => {
+    const date = new Date(dateString)
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+    return days[date.getDay()]
+  }
 
   useEffect(() => {
     if (location && checkIn && checkOut && guests) {
@@ -74,15 +127,33 @@ function SearchContent() {
     )
   }
 
+  const toggleBHKFilter = (bhk: string) => {
+    setFilters(prev => ({
+      ...prev,
+      bhk: prev.bhk.includes(bhk) 
+        ? prev.bhk.filter(b => b !== bhk)
+        : [...prev.bhk, bhk]
+    }))
+  }
+
+  const filteredVillas = villas.filter(villa => {
+    // BHK filter
+    if (filters.bhk.length > 0) {
+      const villasBHK = `${villa.bedrooms}BHK`
+      if (!filters.bhk.includes(villasBHK)) return false
+    }
+    return true
+  })
+
   const generateWhatsAppMessage = () => {
-    const selectedVillaDetails = villas.filter(villa => selectedVillas.includes(villa.id))
+    const selectedVillaDetails = filteredVillas.filter(villa => selectedVillas.includes(villa.id))
     
     if (selectedVillaDetails.length === 0) {
       alert('Please select at least one villa')
       return
     }
 
-    const message = `Hi! I'm interested in booking the following villa(s) for ${format(new Date(checkIn!), 'MMM dd, yyyy')} to ${format(new Date(checkOut!), 'MMM dd, yyyy')} for ${guests} guest(s):\n\n${selectedVillaDetails.map(villa => `🏡 ${villa.name}\n📍 ${villa.location}\n💰 ₹${villa.pricePerNight.toLocaleString()}/night\n`).join('\n')}\n\nPlease share availability and booking details. Thank you!`
+    const message = `Hi! I'm interested in booking the following villa(s) for ${format(new Date(checkIn!), 'MMM dd, yyyy')} to ${format(new Date(checkOut!), 'MMM dd, yyyy')} for ${guests} guest(s):\n\n${selectedVillaDetails.map(villa => `🏡 ${villa.name}\n📍 ${villa.location}\n💰 ₹${getPriceForDate(villa, checkIn!).toLocaleString()}/night (${getDayName(checkIn!)})${villa.googleDriveLink ? `\n📸 More photos: ${villa.googleDriveLink}` : ''}\n`).join('\n')}\n\nPlease share availability and booking details. Thank you!`
 
     // Open WhatsApp with message but allow user to select contact
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
@@ -90,7 +161,7 @@ function SearchContent() {
   }
 
   const handleBookNow = () => {
-    const selectedVillaDetails = villas.filter(villa => selectedVillas.includes(villa.id))
+    const selectedVillaDetails = filteredVillas.filter(villa => selectedVillas.includes(villa.id))
     
     if (selectedVillaDetails.length === 0) {
       alert('Please select at least one villa')
@@ -98,7 +169,7 @@ function SearchContent() {
     }
 
     // Create the same detailed message as WhatsApp
-    const message = `Hi! I'm interested in booking the following villa(s) for ${format(new Date(checkIn!), 'MMM dd, yyyy')} to ${format(new Date(checkOut!), 'MMM dd, yyyy')} for ${guests} guest(s):\n\n${selectedVillaDetails.map(villa => `🏡 ${villa.name}\n📍 ${villa.location}\n💰 ₹${villa.pricePerNight.toLocaleString()}/night\n`).join('\n')}\n\nPlease share availability and booking details. Thank you!`
+    const message = `Hi! I'm interested in booking the following villa(s) for ${format(new Date(checkIn!), 'MMM dd, yyyy')} to ${format(new Date(checkOut!), 'MMM dd, yyyy')} for ${guests} guest(s):\n\n${selectedVillaDetails.map(villa => `🏡 ${villa.name}\n📍 ${villa.location}\n💰 ₹${getPriceForDate(villa, checkIn!).toLocaleString()}/night (${getDayName(checkIn!)})\n`).join('\n')}\n\nPlease share availability and booking details. Thank you!`
 
     // Send message directly to your WhatsApp number (same as Book via WhatsApp)
     const whatsappUrl = `https://wa.me/919168355968?text=${encodeURIComponent(message)}`
@@ -130,7 +201,7 @@ function SearchContent() {
               <h1 className="text-2xl font-bold text-indigo-600">VillaRent</h1>
             </div>
             <div className="text-sm text-gray-600">
-              {villas.length} villa(s) found in {location}
+              {filteredVillas.length} villa(s) found in {location}
             </div>
           </div>
         </div>
@@ -148,25 +219,78 @@ function SearchContent() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {villas.length === 0 ? (
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+          <h3 className="text-lg font-semibold mb-4">Filters</h3>
+          <div className="flex flex-wrap gap-6">
+            {/* BHK Filter */}
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Room Type</h4>
+              <div className="flex gap-2">
+                {['3BHK', '4BHK'].map(bhk => (
+                  <label key={bhk} className="flex items-center">
+                    <Checkbox 
+                      checked={filters.bhk.includes(bhk)}
+                      onCheckedChange={() => toggleBHKFilter(bhk)}
+                      className="mr-2"
+                    />
+                    <span className="text-sm">{bhk}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        {filteredVillas.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-gray-400 text-6xl mb-4">🏡</div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">No villas found</h3>
             <p className="text-gray-500 mb-6">
-              No villas are available for your selected dates and location. Try different dates or location.
+              No villas match your filters. Try adjusting your search criteria.
             </p>
-            <Link href="/">
-              <Button>Search Again</Button>
-            </Link>
+            <Button onClick={() => setFilters({ bhk: [], priceRange: 'all', amenities: [] })}>
+              Clear Filters
+            </Button>
           </div>
         ) : (
           <>
             {/* Villa Results */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {villas.map((villa) => (
+              {filteredVillas.map((villa) => (
                 <Card key={villa.id} className={`cursor-pointer transition-all hover:shadow-md ${
                   selectedVillas.includes(villa.id) ? 'ring-2 ring-indigo-500 bg-indigo-50' : ''
                 }`}>
+                  {/* Villa Image */}
+                  <div className="relative h-48 overflow-hidden rounded-t-lg">
+                    {villa.images && villa.images.length > 0 ? (
+                      <img 
+                        src={villa.images[0].startsWith('/') ? villa.images[0] : `/uploads/villas/${villa.images[0]}`}
+                        alt={villa.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Fallback to placeholder if image fails to load
+                          (e.target as HTMLImageElement).src = '/placeholder-villa.svg'
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                        <span className="text-gray-400 text-sm">No Image</span>
+                      </div>
+                    )}
+                    {/* Price badge overlay with dynamic pricing */}
+                    <div className="absolute top-3 right-3 bg-black bg-opacity-75 text-white px-2 py-1 rounded text-sm font-semibold">
+                      ₹{checkIn ? getPriceForDate(villa, checkIn).toLocaleString() : villa.pricePerNight.toLocaleString()}/night
+                      {checkIn && (
+                        <div className="text-xs opacity-75 flex items-center gap-1">
+                          {getDayName(checkIn)}
+                          {isAdminPricing(villa, checkIn) && (
+                            <span className="bg-green-500 text-white px-1 rounded text-xs">★</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
@@ -221,16 +345,46 @@ function SearchContent() {
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-2xl font-bold text-indigo-600">
-                          ₹{villa.pricePerNight.toLocaleString()}
-                        </span>
-                        <span className="text-sm text-gray-500">/night</span>
+                    {/* Pricing Summary */}
+                    <div className="border-t pt-3 mt-3">
+                      <div className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                        Pricing by day:
+                        <span className="text-green-600">★ = Special rate</span>
                       </div>
-                      <div className="text-xs text-gray-500">
-                        Owner: {villa.owner.name}
+                      <div className="grid grid-cols-2 gap-1 text-xs">
+                        <div className="flex justify-between items-center">
+                          <span>Mon-Thu:</span>
+                          <span className="font-medium flex items-center gap-1">
+                            ₹{(villa.adminWeekdayPrice || villa.weekdayPrice || villa.pricePerNight).toLocaleString()}
+                            {villa.adminWeekdayPrice && <span className="text-green-500">★</span>}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span>Friday:</span>
+                          <span className="font-medium flex items-center gap-1">
+                            ₹{(villa.adminSaturdayPrice || villa.fridayPrice || villa.pricePerNight).toLocaleString()}
+                            {villa.adminSaturdayPrice && <span className="text-green-500">★</span>}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span>Saturday:</span>
+                          <span className="font-medium flex items-center gap-1">
+                            ₹{(villa.adminSaturdayPrice || villa.saturdayPrice || villa.pricePerNight).toLocaleString()}
+                            {villa.adminSaturdayPrice && <span className="text-green-500">★</span>}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span>Sunday:</span>
+                          <span className="font-medium flex items-center gap-1">
+                            ₹{(villa.adminSundayPrice || villa.sundayPrice || villa.pricePerNight).toLocaleString()}
+                            {villa.adminSundayPrice && <span className="text-green-500">★</span>}
+                          </span>
+                        </div>
                       </div>
+                    </div>
+
+                    <div className="text-right text-xs text-gray-500">
+                      By Namaha Stays
                     </div>
                   </CardContent>
                 </Card>

@@ -84,7 +84,28 @@ export async function GET(request: NextRequest) {
           }
         }
       },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        location: true,
+        address: true,
+        maxGuests: true,
+        bedrooms: true,
+        bathrooms: true,
+        pricePerNight: true,
+        // Owner pricing fields (not exposed to users)
+        weekdayPrice: true,
+        fridayPrice: true,
+        saturdayPrice: true,
+        sundayPrice: true,
+        // Admin pricing fields (displayed to users)
+        adminWeekdayPrice: true,
+        adminSaturdayPrice: true,
+        adminSundayPrice: true,
+        amenities: true,
+        images: true,
+        googleDriveLink: true,
         owner: {
           select: {
             id: true,

@@ -177,8 +177,8 @@ export async function uploadImage(file: File): Promise<string> {
   // Always compress images first
   const maxSizeKB = 500
   
-  if (process.env.NODE_ENV === 'production' && process.env.USE_DATABASE_STORAGE === 'true') {
-    // For production: store in database as Base64
+  if (process.env.NODE_ENV === 'production' && process.env.IMAGE_STORAGE === 'postgresql') {
+    // For production: store in PostgreSQL database as Base64
     const imageData = await uploadToDatabase(file, maxSizeKB)
     return imageData.base64
   } else if (process.env.NODE_ENV === 'production' && process.env.CLOUDINARY_CLOUD_NAME) {

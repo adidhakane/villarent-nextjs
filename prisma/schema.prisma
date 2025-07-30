@@ -1,12 +1,12 @@
-// Local development SQLite Schema
-// This file is used when NODE_ENV=development
+// Production-first Schema - PostgreSQL
+// For local development, use PostgreSQL in Docker or online database
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

@@ -3,9 +3,5 @@
     "app/api/**": {
       "maxDuration": 30
     }
-  },
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "framework": "nextjs",
-  "regions": ["iad1"]
+  }
 }

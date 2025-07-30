@@ -6,7 +6,14 @@
   },
   "build": {
     "env": {
-      "DATABASE_URL": "file:./dev.db"
+      "DATABASE_URL": "file:./dev.db",
+      "NODE_ENV": "production"
     }
+  },
+  "env": {
+    "DATABASE_URL": "file:./dev.db",
+    "NEXTAUTH_SECRET": "villa-rental-production-ultra-secure-secret-key-2024-32chars",
+    "NEXTAUTH_URL": "https://villarent-nextjs.vercel.app",
+    "NODE_ENV": "production"
   }
 }

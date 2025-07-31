@@ -1,0 +1,16 @@
+{
+  "functions": {
+    "app/api/**": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
+  "regions": ["iad1"]
+}

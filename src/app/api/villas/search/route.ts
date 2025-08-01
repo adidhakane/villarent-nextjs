@@ -119,8 +119,9 @@ export async function GET(request: NextRequest) {
           adminWeekdayPrice: true,
           adminSaturdayPrice: true,
           adminSundayPrice: true,
-          amenities: true,
-          images: true,
+          // Exclude JSON fields initially to isolate the issue
+          // amenities: true,
+          // images: true,
           googleDriveLink: true,
           owner: {
             select: {
@@ -144,8 +145,10 @@ export async function GET(request: NextRequest) {
     }    // Transform villas to parse JSON fields
     let transformedVillas
     try {
-      transformedVillas = transformVillasForAPI(villas)
-      console.log(`Successfully transformed ${transformedVillas.length} villas`)
+      // Temporarily disable transformation to isolate JSON parsing issues
+      // transformedVillas = transformVillasForAPI(villas)
+      transformedVillas = villas // Use raw data without transformation
+      console.log(`Successfully returned ${transformedVillas.length} villas (no transformation)`)
     } catch (transformError) {
       console.error('Villa transformation failed:', transformError)
       console.error('Raw villa data that failed:', JSON.stringify(villas, null, 2))

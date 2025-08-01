@@ -38,7 +38,8 @@ export async function GET(request: NextRequest) {
     // Find villas that match criteria and are available
     let villas
     try {
-      villas = await prisma.villa.findMany({
+      // First get villas without JSON fields
+      const rawVillas = await prisma.villa.findMany({
         where: {
           location: {
             contains: location,
@@ -119,9 +120,6 @@ export async function GET(request: NextRequest) {
           adminWeekdayPrice: true,
           adminSaturdayPrice: true,
           adminSundayPrice: true,
-          // Exclude JSON fields initially to isolate the issue
-          // amenities: true,
-          // images: true,
           googleDriveLink: true,
           owner: {
             select: {
@@ -135,6 +133,35 @@ export async function GET(request: NextRequest) {
           pricePerNight: 'asc'
         }
       })
+
+      // Now safely add JSON fields for each villa
+      villas = await Promise.all(rawVillas.map(async (villa) => {
+        try {
+          // Try to get the JSON fields safely
+          const villaWithJson = await prisma.villa.findUnique({
+            where: { id: villa.id },
+            select: {
+              amenities: true,
+              images: true
+            }
+          })
+          
+          return {
+            ...villa,
+            amenities: villaWithJson?.amenities || [],
+            images: villaWithJson?.images || []
+          }
+        } catch (jsonError) {
+          console.error(`Failed to get JSON fields for villa ${villa.id}:`, jsonError)
+          // Return villa without JSON fields if they're malformed
+          return {
+            ...villa,
+            amenities: [],
+            images: []
+          }
+        }
+      }))
+
     } catch (dbError) {
       console.error('Database query failed:', dbError)
       return NextResponse.json({
@@ -145,10 +172,8 @@ export async function GET(request: NextRequest) {
     }    // Transform villas to parse JSON fields
     let transformedVillas
     try {
-      // Temporarily disable transformation to isolate JSON parsing issues
-      // transformedVillas = transformVillasForAPI(villas)
-      transformedVillas = villas // Use raw data without transformation
-      console.log(`Successfully returned ${transformedVillas.length} villas (no transformation)`)
+      transformedVillas = transformVillasForAPI(villas)
+      console.log(`Successfully transformed ${transformedVillas.length} villas`)
     } catch (transformError) {
       console.error('Villa transformation failed:', transformError)
       console.error('Raw villa data that failed:', JSON.stringify(villas, null, 2))

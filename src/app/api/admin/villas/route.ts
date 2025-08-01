@@ -8,12 +8,17 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
+    console.log('Admin villas API called by:', session?.user?.email, 'Role:', session?.user?.role)
+    
     if (!session || session.user.role !== 'ADMIN') {
+      console.log('❌ Unauthorized access attempt to admin villas')
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
+
+    console.log('✅ Admin authorization successful, fetching villas...')
 
     // First get villas without JSON fields to avoid parsing errors
     const rawVillas = await prisma.villa.findMany({
@@ -64,6 +69,8 @@ export async function GET(request: NextRequest) {
       }
     })
 
+    console.log(`📊 Found ${rawVillas.length} raw villas in database`)
+
     // Now safely add JSON fields for each villa
     const villas = await Promise.all(rawVillas.map(async (villa) => {
       try {
@@ -91,6 +98,8 @@ export async function GET(request: NextRequest) {
         }
       }
     }))
+
+    console.log(`🔄 Processed ${villas.length} villas with JSON fields`)
 
     // Transform villas to parse JSON fields
     let transformedVillas

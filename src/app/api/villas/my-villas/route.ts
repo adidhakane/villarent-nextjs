@@ -8,12 +8,17 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
+    console.log('Owner villas API called by:', session?.user?.email, 'Role:', session?.user?.role)
+    
     if (!session?.user?.id) {
+      console.log('❌ No session found for my-villas')
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
+
+    console.log('✅ Owner authorization successful, fetching villas for user:', session.user.id)
 
     // First get villas without JSON fields to avoid parsing errors
     const rawVillas = await prisma.villa.findMany({

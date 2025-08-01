@@ -36,105 +36,125 @@ export async function GET(request: NextRequest) {
     console.log('Searching villas with criteria:', { location, checkInDate, checkOutDate, guestCount })
 
     // Find villas that match criteria and are available
-    const villas = await prisma.villa.findMany({
-      where: {
-        location: {
-          contains: location,
-          mode: process.env.NODE_ENV === 'production' ? 'insensitive' : undefined
-        },
-        maxGuests: {
-          gte: guestCount
-        },
-        isApproved: true,
-        isActive: true,
-        // Exclude villas with conflicting bookings
-        NOT: {
-          bookings: {
-            some: {
-              status: {
-                in: ['CONFIRMED', 'PENDING']
-              },
-              OR: [
-                {
-                  // Booking starts during our stay
-                  checkIn: {
-                    gte: checkInDate,
-                    lt: checkOutDate
-                  }
+    let villas
+    try {
+      villas = await prisma.villa.findMany({
+        where: {
+          location: {
+            contains: location,
+            mode: process.env.NODE_ENV === 'production' ? 'insensitive' : undefined
+          },
+          maxGuests: {
+            gte: guestCount
+          },
+          isApproved: true,
+          isActive: true,
+          // Exclude villas with conflicting bookings
+          NOT: {
+            bookings: {
+              some: {
+                status: {
+                  in: ['CONFIRMED', 'PENDING']
                 },
-                {
-                  // Booking ends during our stay
-                  checkOut: {
-                    gt: checkInDate,
-                    lte: checkOutDate
-                  }
-                },
-                {
-                  // Booking completely encompasses our stay
-                  AND: [
-                    {
-                      checkIn: {
-                        lte: checkInDate
-                      }
-                    },
-                    {
-                      checkOut: {
-                        gte: checkOutDate
-                      }
+                OR: [
+                  {
+                    // Booking starts during our stay
+                    checkIn: {
+                      gte: checkInDate,
+                      lt: checkOutDate
                     }
-                  ]
-                }
-              ]
+                  },
+                  {
+                    // Booking ends during our stay
+                    checkOut: {
+                      gt: checkInDate,
+                      lte: checkOutDate
+                    }
+                  },
+                  {
+                    // Booking completely encompasses our stay
+                    AND: [
+                      {
+                        checkIn: {
+                          lte: checkInDate
+                        }
+                      },
+                      {
+                        checkOut: {
+                          gte: checkOutDate
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          },
+          // Exclude villas with unavailable dates in the range
+          unavailableDates: {
+            none: {
+              date: {
+                gte: checkInDate,
+                lt: checkOutDate
+              }
             }
           }
         },
-        // Exclude villas with unavailable dates in the range
-        unavailableDates: {
-          none: {
-            date: {
-              gte: checkInDate,
-              lt: checkOutDate
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          location: true,
+          address: true,
+          maxGuests: true,
+          bedrooms: true,
+          bathrooms: true,
+          pricePerNight: true,
+          // Owner pricing fields (not exposed to users)
+          weekdayPrice: true,
+          fridayPrice: true,
+          saturdayPrice: true,
+          sundayPrice: true,
+          // Admin pricing fields (displayed to users)
+          adminWeekdayPrice: true,
+          adminSaturdayPrice: true,
+          adminSundayPrice: true,
+          amenities: true,
+          images: true,
+          googleDriveLink: true,
+          owner: {
+            select: {
+              id: true,
+              name: true,
+              email: true
             }
           }
+        },
+        orderBy: {
+          pricePerNight: 'asc'
         }
-      },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        location: true,
-        address: true,
-        maxGuests: true,
-        bedrooms: true,
-        bathrooms: true,
-        pricePerNight: true,
-        // Owner pricing fields (not exposed to users)
-        weekdayPrice: true,
-        fridayPrice: true,
-        saturdayPrice: true,
-        sundayPrice: true,
-        // Admin pricing fields (displayed to users)
-        adminWeekdayPrice: true,
-        adminSaturdayPrice: true,
-        adminSundayPrice: true,
-        amenities: true,
-        images: true,
-        googleDriveLink: true,
-        owner: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      },
-      orderBy: {
-        pricePerNight: 'asc'
-      }
-    })
-
-    // Transform villas to parse JSON fields
-    const transformedVillas = transformVillasForAPI(villas)
+      })
+    } catch (dbError) {
+      console.error('Database query failed:', dbError)
+      return NextResponse.json({
+        success: false,
+        error: 'Database query failed',
+        details: dbError instanceof Error ? dbError.message : 'Unknown database error'
+      }, { status: 500 })
+    }    // Transform villas to parse JSON fields
+    let transformedVillas
+    try {
+      transformedVillas = transformVillasForAPI(villas)
+      console.log(`Successfully transformed ${transformedVillas.length} villas`)
+    } catch (transformError) {
+      console.error('Villa transformation failed:', transformError)
+      console.error('Raw villa data that failed:', JSON.stringify(villas, null, 2))
+      return NextResponse.json({
+        success: false,
+        error: 'Villa data transformation failed',
+        details: transformError instanceof Error ? transformError.message : 'Unknown transformation error'
+      }, { status: 500 })
+    }
 
     console.log(`Found ${transformedVillas.length} villas matching search criteria`)
 

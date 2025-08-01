@@ -39,11 +39,24 @@ export async function GET(
       )
     }
 
-    // Parse JSON fields for frontend
-    const transformedVilla = {
-      ...villa,
-      amenities: villa.amenities ? JSON.parse(villa.amenities as string) : [],
-      images: villa.images ? JSON.parse(villa.images as string) : []
+    // Safely parse JSON fields for frontend
+    let transformedVilla
+    try {
+      transformedVilla = {
+        ...villa,
+        amenities: Array.isArray(villa.amenities) ? villa.amenities : 
+                  (villa.amenities ? JSON.parse(villa.amenities as string) : []),
+        images: Array.isArray(villa.images) ? villa.images : 
+               (villa.images ? JSON.parse(villa.images as string) : [])
+      }
+    } catch (jsonError) {
+      console.error(`Failed to parse JSON fields for villa ${params.id}:`, jsonError)
+      // Return villa with empty arrays if JSON is malformed
+      transformedVilla = {
+        ...villa,
+        amenities: [],
+        images: []
+      }
     }
 
     return NextResponse.json({ villa: transformedVilla })

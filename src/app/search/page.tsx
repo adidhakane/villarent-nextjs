@@ -42,6 +42,7 @@ function SearchContent() {
   const searchParams = useSearchParams()
   const [villas, setVillas] = useState<Villa[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [selectedVillas, setSelectedVillas] = useState<string[]>([])
   const [filters, setFilters] = useState({
     bhk: [] as string[], // 3BHK, 4BHK filter
@@ -100,6 +101,9 @@ function SearchContent() {
 
   const searchVillas = async () => {
     try {
+      setLoading(true)
+      setError(null)
+      
       const params = new URLSearchParams({
         location: location!,
         checkIn: checkIn!,
@@ -107,13 +111,30 @@ function SearchContent() {
         guests: guests!
       })
 
+      console.log('Searching villas with params:', params.toString())
+
       const response = await fetch(`/api/villas/search?${params}`)
-      if (response.ok) {
-        const data = await response.json()
-        setVillas(data.villas)
+      
+      if (!response.ok) {
+        const errorData = await response.text()
+        console.error('API Error:', response.status, errorData)
+        throw new Error(`Failed to search villas (${response.status})`)
+      }
+
+      const data = await response.json()
+      console.log('Search response:', data)
+      
+      if (data.success) {
+        setVillas(data.villas || [])
+      } else {
+        console.error('Search failed:', data.error)
+        setError(data.error || 'Search failed')
+        setVillas([])
       }
     } catch (error) {
       console.error('Failed to search villas:', error)
+      setError(error instanceof Error ? error.message : 'Failed to search villas')
+      setVillas([])
     } finally {
       setLoading(false)
     }
@@ -182,6 +203,24 @@ function SearchContent() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Searching for villas...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Search Failed</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <Button onClick={() => searchVillas()} className="mr-4">
+            Try Again
+          </Button>
+          <Link href="/">
+            <Button variant="outline">Back to Home</Button>
+          </Link>
         </div>
       </div>
     )

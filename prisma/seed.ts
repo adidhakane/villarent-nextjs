@@ -45,12 +45,8 @@ async function main() {
       maxGuests: 8,
       bedrooms: 4,
       bathrooms: 3,
-      amenities: process.env.NODE_ENV === 'production' 
-        ? (amenitiesData as any)
-        : JSON.stringify(amenitiesData),
-      images: process.env.NODE_ENV === 'production' 
-        ? (imagesData as any)
-        : JSON.stringify(imagesData),
+      amenities: amenitiesData,  // Direct JSON array for PostgreSQL
+      images: imagesData,        // Direct JSON array for PostgreSQL
       pricePerNight: 5000,
       ownerId: owner.id,
       isApproved: true,

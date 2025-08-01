@@ -15,6 +15,7 @@
     "db:studio": "prisma studio",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
+    "db:deploy": "prisma migrate deploy",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -32,6 +33,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.2.1",
     "lucide-react": "^0.525.0",
     "next": "15.4.1",
     "next-auth": "^4.24.11",

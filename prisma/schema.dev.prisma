@@ -1,13 +1,13 @@
-// Unified Schema - PostgreSQL for both development and production
-// This ensures consistency across all environments
+// Development Schema - SQLite for local development
+// This file is used when NODE_ENV=development
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -84,8 +84,8 @@ model Villa {
   maxGuests      Int
   bedrooms       Int
   bathrooms      Int
-  amenities      Json     // PostgreSQL native JSON support
-  images         Json     // PostgreSQL native JSON support  
+  amenities      String   // SQLite uses JSON strings
+  images         String   // SQLite uses JSON strings  
   pricePerNight  Float
   
   // New pricing fields

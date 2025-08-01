@@ -1,14 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db'
+import { prisma, checkDatabaseConnection } from '@/lib/db'
 import { transformVillasForAPI } from '@/lib/utils/villa-transform'
 
 export async function GET(request: NextRequest) {
   try {
+    // Check database connection first
+    const isConnected = await checkDatabaseConnection()
+    if (!isConnected) {
+      console.error('Database connection failed in search API')
+      return NextResponse.json(
+        { error: 'Database connection failed' },
+        { status: 500 }
+      )
+    }
+
     const { searchParams } = new URL(request.url)
     const location = searchParams.get('location')
     const checkIn = searchParams.get('checkIn')
     const checkOut = searchParams.get('checkOut')
     const guests = searchParams.get('guests')
+
+    console.log('Search API called with params:', { location, checkIn, checkOut, guests })
 
     if (!location || !checkIn || !checkOut || !guests) {
       return NextResponse.json(
@@ -21,12 +33,14 @@ export async function GET(request: NextRequest) {
     const checkOutDate = new Date(checkOut)
     const guestCount = parseInt(guests)
 
+    console.log('Searching villas with criteria:', { location, checkInDate, checkOutDate, guestCount })
+
     // Find villas that match criteria and are available
     const villas = await prisma.villa.findMany({
       where: {
         location: {
-          contains: location
-          // Note: SQLite doesn't support mode: 'insensitive', using contains which is case-sensitive
+          contains: location,
+          mode: process.env.NODE_ENV === 'production' ? 'insensitive' : undefined
         },
         maxGuests: {
           gte: guestCount
@@ -122,6 +136,8 @@ export async function GET(request: NextRequest) {
     // Transform villas to parse JSON fields
     const transformedVillas = transformVillasForAPI(villas)
 
+    console.log(`Found ${transformedVillas.length} villas matching search criteria`)
+
     return NextResponse.json({
       success: true,
       villas: transformedVillas,
@@ -134,8 +150,16 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Villa search error:', error)
+    console.error('Error details:', {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      cause: error instanceof Error ? error.cause : undefined
+    })
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? error : undefined
+      },
       { status: 500 }
     )
   }

@@ -88,44 +88,9 @@ export async function compressImageServer(file: File, maxSizeKB: number = 500): 
 }
 
 export async function uploadToCloudinary(file: File): Promise<string> {
-  try {
-    // Dynamic import for Cloudinary
-    const { v2: cloudinary } = await import('cloudinary')
-    
-    // Configure Cloudinary
-    cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET
-    })
-
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-
-    return new Promise((resolve, reject) => {
-      cloudinary.uploader.upload_stream(
-        {
-          folder: 'villas',
-          transformation: [
-            { width: 1200, height: 800, crop: 'fill' },
-            { quality: 'auto' },
-            { format: 'auto' }
-          ]
-        },
-        (error: any, result: any) => {
-          if (error) {
-            reject(error)
-          } else {
-            resolve(result!.secure_url)
-          }
-        }
-      ).end(buffer)
-    })
-  } catch (error) {
-    // If Cloudinary is not available, fall back to local storage
-    console.warn('Cloudinary not available, falling back to local storage:', error)
-    return uploadToLocal(file)
-  }
+  // Cloudinary functionality disabled for production build compatibility
+  // This prevents build errors on Vercel when cloudinary module is not available
+  throw new Error('Cloudinary functionality is disabled. Using local/database storage instead.')
 }
 
 // Fallback to local storage for development

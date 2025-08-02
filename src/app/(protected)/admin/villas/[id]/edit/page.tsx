@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, Home, Save } from 'lucide-react'
+import { getVillaImageUrlWithFallback } from '@/lib/utils/image-utils'
 
 interface Villa {
   id: string
@@ -652,7 +653,7 @@ export default function EditVillaPage() {
                   <div>
                     <Label className="block mb-2">Current Image</Label>
                     <img 
-                      src={villa.images[0].startsWith('/') ? villa.images[0] : `/uploads/villas/${villa.images[0]}`}
+                      src={getVillaImageUrlWithFallback(villa.images)}
                       alt="Current villa image"
                       className="h-32 w-48 object-cover rounded-md border"
                       onError={(e) => {

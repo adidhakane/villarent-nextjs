@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { ArrowLeft, Users, Bed, Bath, MapPin, Phone, MessageCircle, DollarSign } from 'lucide-react'
 import { format } from 'date-fns'
+import { getVillaImageUrlWithFallback } from '@/lib/utils/image-utils'
 
 interface Villa {
   id: string
@@ -303,7 +304,7 @@ function SearchContent() {
                   <div className="relative h-48 overflow-hidden rounded-t-lg">
                     {villa.images && villa.images.length > 0 ? (
                       <img 
-                        src={villa.images[0].startsWith('/') ? villa.images[0] : `/uploads/villas/${villa.images[0]}`}
+                        src={getVillaImageUrlWithFallback(villa.images)}
                         alt={villa.name}
                         className="w-full h-full object-cover"
                         onError={(e) => {

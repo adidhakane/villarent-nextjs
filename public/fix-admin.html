@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fix Admin Role</title>
+</head>
+<body>
+    <h1>Fix Admin User Role</h1>
+    <button onclick="fixAdminRole()">Fix Admin Role to ADMIN</button>
+    <div id="result"></div>
+
+    <script>
+        async function fixAdminRole() {
+            try {
+                const response = await fetch('/api/admin/fix-user-role', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@example.com',
+                        role: 'ADMIN'
+                    })
+                });
+
+                const result = await response.json();
+                document.getElementById('result').innerHTML = '<pre>' + JSON.stringify(result, null, 2) + '</pre>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,390 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 10% 3.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 10% 3.9%;
+  --primary: 240 9% 10%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 240 4.8% 95.9%;
+  --secondary-foreground: 240 5.9% 10%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
+  --accent: 240 4.8% 95.9%;
+  --accent-foreground: 240 5.9% 10%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 5.9% 90%;
+  --input: 240 5.9% 90%;
+  --ring: 240 10% 3.9%;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 240 9% 10%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --ring: 240 4.9% 83.9%;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+/* Custom styles for enhanced landing page */
+.bg-grid-pattern {
+  background-image: radial-gradient(circle at 2px 2px, rgba(34, 197, 94, 0.1) 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+/* Nature-themed gradients */
+.nature-gradient {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.nature-gradient-soft {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+}
+
+/* Enhanced date inputs for better UX */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  background-color: #10b981;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 4px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  background-color: #059669;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Enhanced mobile touch targets */
+@media (max-width: 768px) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Loading animation for better UX */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Nature-themed pulse animation */
+@keyframes naturePulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+}
+
+.animate-nature-pulse {
+  animation: naturePulse 2s infinite;
+}
+
+/* Custom gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Enhanced focus states for accessibility */
+button:focus, 
+input:focus, 
+select:focus, 
+textarea:focus {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+}
+
+/* Enhanced hover effects for cards */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Mobile-first responsive typography */
+@media (max-width: 640px) {
+  h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+  }
+  
+  h2 {
+    font-size: 1.75rem;
+    line-height: 1.3;
+  }
+  
+  .text-xl {
+    font-size: 1.125rem;
+  }
+  
+  /* Better mobile spacing */
+  .mobile-spacing {
+    padding: 1rem;
+  }
+}
+
+/* Enhanced Calendar Input Styling */
+input[type="date"] {
+  position: relative;
+  cursor: pointer;
+  font-family: inherit;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+input[type="date"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(38, 115, 165, 0.1);
+  border-color: #2673a5 !important;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+input[type="date"]:hover {
+  border-color: #2673a5 !important;
+  background-color: #f8fafc;
+}
+
+/* Check-out date specific styling */
+input[type="date"][id="checkOut"]:focus {
+  box-shadow: 0 0 0 3px rgba(214, 51, 132, 0.1);
+  border-color: #d63384 !important;
+}
+
+input[type="date"][id="checkOut"]:hover {
+  border-color: #d63384 !important;
+}
+
+/* Mobile responsiveness for date inputs */
+@media (max-width: 768px) {
+  input[type="date"] {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* React DatePicker Custom Styling */
+.react-datepicker-popper {
+  z-index: 999 !important;
+}
+
+.react-datepicker {
+  font-family: inherit;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.react-datepicker__header {
+  background: linear-gradient(135deg, #2673a5, #1e5a8a);
+  border-bottom: none;
+  padding: 16px;
+}
+
+.react-datepicker__current-month {
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.react-datepicker__day-names {
+  background: white;
+  margin: 0;
+  padding: 8px 0;
+}
+
+.react-datepicker__day-name {
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 12px;
+  width: 32px;
+  line-height: 32px;
+}
+
+.react-datepicker__month {
+  margin: 0;
+  padding: 12px;
+  background: white;
+}
+
+.react-datepicker__day {
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  border-radius: 8px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 2px;
+  transition: all 0.2s ease;
+}
+
+.react-datepicker__day:hover {
+  background-color: #dbeafe;
+  color: #2673a5;
+  transform: scale(1.1);
+}
+
+.react-datepicker__day--selected {
+  background: linear-gradient(135deg, #2673a5, #1e5a8a);
+  color: white;
+  font-weight: 600;
+}
+
+.react-datepicker__day--selected:hover {
+  background: linear-gradient(135deg, #1e5a8a, #164e87);
+}
+
+.react-datepicker__day--today {
+  background-color: #fef3c7;
+  color: #92400e;
+  font-weight: 600;
+}
+
+.react-datepicker__day--disabled {
+  color: #d1d5db;
+  cursor: not-allowed;
+}
+
+.react-datepicker__day--disabled:hover {
+  background-color: transparent;
+  transform: none;
+}
+
+.react-datepicker__day--keyboard-selected {
+  background-color: #dbeafe;
+  color: #2673a5;
+}
+
+.react-datepicker__navigation {
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  width: 32px;
+  height: 32px;
+  top: 20px;
+  transition: all 0.2s ease;
+}
+
+.react-datepicker__navigation:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.react-datepicker__navigation-icon::before {
+  border-color: white;
+  border-width: 2px 2px 0 0;
+  width: 6px;
+  height: 6px;
+}
+
+.react-datepicker__dropdown {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.react-datepicker__dropdown-option {
+  padding: 8px 12px;
+  transition: all 0.2s ease;
+}
+
+.react-datepicker__dropdown-option:hover {
+  background-color: #f3f4f6;
+  color: #2673a5;
+}
+
+.react-datepicker__dropdown-option--selected {
+  background-color: #2673a5;
+  color: white;
+}
+
+/* Weekend highlighting */
+.react-datepicker__day--weekend {
+  color: #dc2626;
+}
+
+/* Outside month dates */
+.react-datepicker__day--outside-month {
+  color: #d1d5db;
+}
+
+/* Mobile responsiveness for datepicker */
+@media (max-width: 768px) {
+  .react-datepicker {
+    width: 100%;
+    max-width: 320px;
+  }
+  
+  .react-datepicker__day {
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    font-size: 16px;
+  }
+  
+  .react-datepicker__header {
+    padding: 12px;
+  }
+}

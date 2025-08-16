@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+<<<<<<< HEAD
   title: "VillaRent - Book Premium Villas in Maharashtra | No Registration Required",
   description: "Book luxury villas in Lonavala, Mahabaleshwar, Alibaug & more. Instant WhatsApp booking, 4.9★ rating, trusted by 1000+ guests. No registration required!",
   keywords: ["villa rental Maharashtra", "Lonavala villas", "Mahabaleshwar villa booking", "Alibaug villa rental", "weekend getaway", "vacation rental", "premium villas", "instant booking", "WhatsApp booking"],
@@ -32,6 +33,11 @@ export const metadata: Metadata = {
   other: {
     "google-site-verification": "your-verification-code-here",
   },
+=======
+  title: "Villa Rental System - Premium Villa Rentals",
+  description: "Discover and book premium villas for your perfect getaway. Manage your villa rentals with ease.",
+  keywords: ["villa rental", "vacation rental", "premium villas", "holiday homes"],
+>>>>>>> a699f2ce85b82f4dd9192ea30d61277b19ffa3d3
 };
 
 export default function RootLayout({

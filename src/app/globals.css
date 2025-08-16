@@ -55,6 +55,7 @@ body {
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
 }
+<<<<<<< HEAD
 
 /* Custom styles for enhanced landing page */
 .bg-grid-pattern {
@@ -388,3 +389,5 @@ input[type="date"][id="checkOut"]:hover {
     padding: 12px;
   }
 }
+=======
+>>>>>>> a699f2ce85b82f4dd9192ea30d61277b19ffa3d3

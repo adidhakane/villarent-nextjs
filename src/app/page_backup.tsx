@@ -1,6 +1,10 @@
 'use client'
 
+<<<<<<< HEAD
 import { useState, useEffect } from 'react'
+=======
+import { useState } from 'react'
+>>>>>>> a699f2ce85b82f4dd9192ea30d61277b19ffa3d3
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -8,13 +12,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
+<<<<<<< HEAD
 import { Badge } from '@/components/ui/badge'
 import { CustomDatePicker } from '@/components/ui/date-picker'
 import { POPULAR_LOCATIONS } from '@/lib/validations'
-import {
-  Star,
-  Users,
-  MapPin,
+import { 
+  Star, 
+  Users, 
+  MapPin, 
   Calendar,
   Shield,
   Heart,
@@ -37,11 +42,15 @@ import {
   Search,
   ChevronDown
 } from 'lucide-react'
+=======
+import { POPULAR_LOCATIONS } from '@/lib/validations'
+>>>>>>> a699f2ce85b82f4dd9192ea30d61277b19ffa3d3
 
 export default function HomePage() {
   const router = useRouter()
   const [searchData, setSearchData] = useState({
     location: '',
+<<<<<<< HEAD
     checkIn: null as Date | null,
     checkOut: null as Date | null,
     guests: 1
@@ -59,16 +68,16 @@ export default function HomePage() {
   const getCurrentWeekendDates = () => {
     const today = new Date()
     const currentDay = today.getDay() // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-
+    
     // Calculate days until next Saturday
     const daysUntilSaturday = currentDay === 6 ? 0 : (6 - currentDay)
-
+    
     const saturday = new Date(today)
     saturday.setDate(today.getDate() + daysUntilSaturday)
-
+    
     const sunday = new Date(saturday)
     sunday.setDate(saturday.getDate() + 1)
-
+    
     return {
       saturday: saturday.toISOString().split('T')[0],
       sunday: sunday.toISOString().split('T')[0]
@@ -80,16 +89,16 @@ export default function HomePage() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50)
     }
-
+    
     const handleClickOutside = (event: MouseEvent) => {
       if (mobileMenuOpen && !(event.target as Element).closest('nav')) {
         setMobileMenuOpen(false)
       }
     }
-
+    
     window.addEventListener('scroll', handleScroll)
     document.addEventListener('click', handleClickOutside)
-
+    
     return () => {
       window.removeEventListener('scroll', handleScroll)
       document.removeEventListener('click', handleClickOutside)
@@ -99,51 +108,67 @@ export default function HomePage() {
   const handleSearch = () => {
     // Reset errors
     setSearchErrors({ location: '', checkIn: '', checkOut: '', dateRange: '' })
-
+    
     // Validation
     const errors = { location: '', checkIn: '', checkOut: '', dateRange: '' }
-
+    
     if (!searchData.location) {
       errors.location = 'Please select a location'
     }
-
+    
     if (!searchData.checkIn) {
       errors.checkIn = 'Please select check-in date'
     }
-
+    
     if (!searchData.checkOut) {
       errors.checkOut = 'Please select check-out date'
     }
-
+    
     if (searchData.checkIn && searchData.checkOut) {
       if (searchData.checkIn >= searchData.checkOut) {
         errors.dateRange = 'Check-out date must be after check-in date'
       }
-
+      
       if (searchData.checkIn.getTime() === searchData.checkOut.getTime()) {
         errors.dateRange = 'Check-in and check-out dates cannot be the same'
       }
     }
-
+    
     // Show errors if any
     if (Object.values(errors).some(error => error)) {
       setSearchErrors(errors)
+=======
+    checkIn: '',
+    checkOut: '',
+    guests: 1
+  })
+
+  const handleSearch = () => {
+    if (!searchData.location || !searchData.checkIn || !searchData.checkOut) {
+      alert('Please fill in all required fields')
+>>>>>>> a699f2ce85b82f4dd9192ea30d61277b19ffa3d3
       return
     }
 
     const searchParams = new URLSearchParams({
       location: searchData.location,
+<<<<<<< HEAD
       checkIn: searchData.checkIn?.toISOString().split('T')[0] || '',
       checkOut: searchData.checkOut?.toISOString().split('T')[0] || '',
+=======
+      checkIn: searchData.checkIn,
+      checkOut: searchData.checkOut,
+>>>>>>> a699f2ce85b82f4dd9192ea30d61277b19ffa3d3
       guests: searchData.guests.toString()
     })
 
     router.push(`/search?${searchParams.toString()}`)
   }
 
+<<<<<<< HEAD
   const handleQuickSearch = (location: string) => {
     const weekendDates = getCurrentWeekendDates()
-
+    
     const searchParams = new URLSearchParams({
       location,
       checkIn: weekendDates.saturday,
@@ -179,43 +204,44 @@ export default function HomePage() {
   ]
 
   const popularDestinations = [
-    {
-      name: 'Lonavala',
+    { 
+      name: 'Lonavala', 
       image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&crop=center',
-      tagline: 'Hill Station Paradise',
-      color: 'from-blue-500 to-blue-600'
+      tagline: 'Hill Station Paradise', 
+      color: 'from-blue-500 to-blue-600' 
     },
-    {
-      name: 'Alibaug',
+    { 
+      name: 'Alibaug', 
       image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&h=600&fit=crop&crop=center',
-      tagline: 'Coastal Retreat',
-      color: 'from-blue-500 to-cyan-600'
+      tagline: 'Coastal Retreat', 
+      color: 'from-blue-500 to-cyan-600' 
     },
-    {
-      name: 'Mahabaleshwar',
+    { 
+      name: 'Mahabaleshwar', 
       image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=600&fit=crop&crop=center',
-      tagline: 'Nature\'s Bliss',
-      color: 'from-blue-500 to-blue-600'
+      tagline: 'Nature\'s Bliss', 
+      color: 'from-blue-500 to-blue-600' 
     },
-    {
-      name: 'Panchgani',
+    { 
+      name: 'Panchgani', 
       image: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&crop=center',
-      tagline: 'Scenic Views',
-      color: 'from-amber-500 to-orange-600'
+      tagline: 'Scenic Views', 
+      color: 'from-amber-500 to-orange-600' 
     },
   ]
 
   return (
     <div className="min-h-screen bg-white">
       {/* Floating Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
-        }`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold" style={{
-                background: 'linear-gradient(to right, #2673a5, #1e5a8a)',
-                WebkitBackgroundClip: 'text',
+              <h1 className="text-2xl font-bold" style={{ 
+                background: 'linear-gradient(to right, #2673a5, #1e5a8a)', 
+                WebkitBackgroundClip: 'text', 
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text'
               }}>
@@ -227,7 +253,7 @@ export default function HomePage() {
                 <Button variant="ghost" size="sm">Villa Owner Login</Button>
               </Link>
               <Link href="/auth/signup">
-                <Button size="sm" style={{
+                <Button size="sm" style={{ 
                   background: 'linear-gradient(to right, #2673a5, #1e5a8a)',
                   borderColor: 'transparent'
                 }} className="hover:opacity-90 text-white">
@@ -237,8 +263,8 @@ export default function HomePage() {
             </div>
             {/* Mobile Menu Button */}
             <div className="md:hidden">
-              <Button
-                variant="ghost"
+              <Button 
+                variant="ghost" 
                 size="sm"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
@@ -246,7 +272,7 @@ export default function HomePage() {
               </Button>
             </div>
           </div>
-
+          
           {/* Mobile Menu */}
           {mobileMenuOpen && (
             <div className="md:hidden border-t bg-white/95 backdrop-blur-md">
@@ -255,7 +281,7 @@ export default function HomePage() {
                   <Button variant="ghost" className="w-full justify-start">Villa Owner Login</Button>
                 </Link>
                 <Link href="/auth/signup" onClick={() => setMobileMenuOpen(false)}>
-                  <Button style={{
+                  <Button style={{ 
                     background: 'linear-gradient(to right, #2673a5, #1e5a8a)',
                     borderColor: 'transparent'
                   }} className="w-full text-white hover:opacity-90">
@@ -277,19 +303,40 @@ export default function HomePage() {
               </div>
             </div>
           )}
+=======
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Navigation */}
+      <nav className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16 items-center">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-indigo-600">VillaRent</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Link href="/auth/signin">
+                <Button variant="outline">Villa Owner Sign In</Button>
+              </Link>
+              <Link href="/auth/signup">
+                <Button>Register Your Villa</Button>
+              </Link>
+            </div>
+          </div>
+>>>>>>> a699f2ce85b82f4dd9192ea30d61277b19ffa3d3
         </div>
       </nav>
 
       {/* Hero Section */}
-      <section
+<<<<<<< HEAD
+      <section 
         className="relative min-h-screen flex items-center pt-16"
         style={{
           background: 'linear-gradient(135deg, #f0f8ff 0%, #e0f2fe 50%, #bae6fd 100%)'
         }}
       >
         {/* Background Image */}
-        <div
-          className="absolute inset-0 opacity-75"
+        <div 
+          className="absolute inset-0 opacity-40"
           style={{
             backgroundImage: 'url("/hero-section.jpg")',
             backgroundSize: 'cover',
@@ -297,16 +344,15 @@ export default function HomePage() {
             backgroundRepeat: 'no-repeat'
           }}
         ></div>
-
+        
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
-
-        {/* Text Content with Enhanced Visibility */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="text-center mb-12">
             {/* Trust Badge */}
-            <div
-              className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium mb-6 shadow-lg"
+            <div 
+              className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium mb-6"
               style={{
                 background: 'linear-gradient(135deg, #2673a5, #1e5a8a)',
                 color: 'white'
@@ -315,65 +361,45 @@ export default function HomePage() {
               <CheckCircle className="w-4 h-4 mr-2" />
               Trusted by 1000+ Happy Guests
             </div>
-
-            <h1
-              className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
-              style={{
-                color: '#1a202c',
-                textShadow: '2px 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.8)'
-              }}
-            >
+            
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6 leading-tight">
               Your Dream Villa
               <br />
-              <span style={{
-                background: 'linear-gradient(to right, #2673a5, #1e5a8a)',
-                WebkitBackgroundClip: 'text',
+              <span style={{ 
+                background: 'linear-gradient(to right, #2673a5, #1e5a8a)', 
+                WebkitBackgroundClip: 'text', 
                 WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                textShadow: 'none'
+                backgroundClip: 'text'
               }}>
                 Awaits You
               </span>
             </h1>
-
-            <p
-              className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto leading-relaxed font-medium"
-              style={{
-                color: '#374151',
-                textShadow: '1px 1px 3px rgba(0,0,0,0.2), 0 0 15px rgba(255,255,255,0.9)'
-              }}
-            >
-              Book premium villas in Maharashtra's most beautiful destinations.
-              <span className="font-bold" style={{ color: '#1a202c' }}> No registration required</span> •
-              <span className="font-bold" style={{ color: '#1a202c' }}> Instant booking via WhatsApp</span>
+            
+            <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+              Book premium villas in Maharashtra's most beautiful destinations. 
+              <span className="font-semibold text-gray-800"> No registration required</span> • 
+              <span className="font-semibold text-gray-800"> Instant booking via WhatsApp</span>
             </p>
 
             {/* Social Proof Stats */}
-            <div
-              className="flex justify-center items-center space-x-8 mb-12 text-sm font-medium"
-              style={{
-                color: '#374151',
-                textShadow: '1px 1px 2px rgba(0,0,0,0.2), 0 0 10px rgba(255,255,255,0.8)'
-              }}
-            >
+            <div className="flex justify-center items-center space-x-8 mb-12 text-sm text-gray-600">
               <div className="flex items-center">
-                <Star className="w-5 h-5 text-amber-400 mr-1 fill-current drop-shadow-lg" />
-                <span className="font-bold">4.9/5 Rating</span>
+                <Star className="w-5 h-5 text-amber-400 mr-1 fill-current" />
+                <span className="font-semibold">4.9/5 Rating</span>
               </div>
               <div className="flex items-center">
-                <Users className="w-5 h-5 mr-1 drop-shadow-lg" style={{ color: '#2673a5' }} />
-                <span className="font-bold">500+ Bookings</span>
+                <Users className="w-5 h-5 mr-1" style={{ color: '#2673a5' }} />
+                <span className="font-semibold">500+ Bookings</span>
               </div>
               <div className="flex items-center">
-                <Clock className="w-5 h-5 mr-1 drop-shadow-lg" style={{ color: '#2673a5' }} />
-                <span className="font-bold">24/7 Support</span>
+                <Clock className="w-5 h-5 mr-1" style={{ color: '#2673a5' }} />
+                <span className="font-semibold">24/7 Support</span>
               </div>
             </div>
           </div>
 
           {/* Enhanced Search Card */}
-          <Card id="search-card" className="max-w-5xl mx-auto shadow-2xl border-0 bg-white/95 backdrop-blur-md">
-
+          <Card id="search-card" className="max-w-5xl mx-auto shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
             <CardHeader className="text-center pb-4">
               <CardTitle className="text-2xl font-bold flex items-center justify-center">
                 <Search className="w-6 h-6 mr-2" style={{ color: '#2673a5' }} />
@@ -389,8 +415,9 @@ export default function HomePage() {
                     Where to? *
                   </Label>
                   <Select onValueChange={(value) => setSearchData(prev => ({ ...prev, location: value }))}>
-                    <SelectTrigger className={`h-12 border-2 transition-colors ${searchErrors.location ? 'border-red-500 focus:border-red-500' : 'border-gray-200'
-                      }`}>
+                    <SelectTrigger className={`h-12 border-2 transition-colors ${
+                      searchErrors.location ? 'border-red-500 focus:border-red-500' : 'border-gray-200'
+                    }`}>
                       <SelectValue placeholder="Choose destination" />
                     </SelectTrigger>
                     <SelectContent>
@@ -405,7 +432,7 @@ export default function HomePage() {
                     <p className="text-red-500 text-xs mt-1">{searchErrors.location}</p>
                   )}
                 </div>
-
+                
                 <div className="space-y-2">
                   <Label htmlFor="checkIn" className="text-sm font-semibold text-gray-700 flex items-center">
                     <Calendar className="w-4 h-4 mr-1" style={{ color: '#2673a5' }} />
@@ -423,7 +450,7 @@ export default function HomePage() {
                     <p className="text-red-500 text-xs mt-1">{searchErrors.checkIn}</p>
                   )}
                 </div>
-
+                
                 <div className="space-y-2">
                   <Label htmlFor="checkOut" className="text-sm font-semibold text-gray-700 flex items-center">
                     <Calendar className="w-4 h-4 mr-1" style={{ color: '#d63384' }} />
@@ -442,7 +469,7 @@ export default function HomePage() {
                     <p className="text-red-500 text-xs mt-1">{searchErrors.checkOut}</p>
                   )}
                 </div>
-
+                
                 <div className="space-y-2">
                   <Label htmlFor="guests" className="text-sm font-semibold text-gray-700 flex items-center">
                     <Users className="w-4 h-4 mr-1 text-teal-500" />
@@ -453,7 +480,7 @@ export default function HomePage() {
                       <SelectValue placeholder="How many?" />
                     </SelectTrigger>
                     <SelectContent>
-                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20].map(num => (
+                      {[1,2,3,4,5,6,7,8,9,10,15,20].map(num => (
                         <SelectItem key={num} value={num.toString()}>
                           {num} Guest{num > 1 ? 's' : ''}
                         </SelectItem>
@@ -462,7 +489,7 @@ export default function HomePage() {
                   </Select>
                 </div>
               </div>
-
+              
               {/* Date Range Error */}
               {searchErrors.dateRange && (
                 <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -472,11 +499,11 @@ export default function HomePage() {
                   </p>
                 </div>
               )}
-
+              
               <div className="flex flex-col sm:flex-row gap-3">
-                <Button
-                  onClick={handleSearch}
-                  style={{
+                <Button 
+                  onClick={handleSearch} 
+                  style={{ 
                     background: 'linear-gradient(to right, #2673a5, #1e5a8a)',
                     borderColor: 'transparent'
                   }}
@@ -515,7 +542,7 @@ export default function HomePage() {
       </section>
 
       {/* Popular Destinations */}
-      <section
+      <section 
         className="py-20"
         style={{
           background: 'linear-gradient(135deg, #f0f8ff 0%, #e0f2fe 100%)'
@@ -529,7 +556,7 @@ export default function HomePage() {
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Discover Maharashtra's most beautiful villa destinations for your weekend getaway
             </p>
-            <div
+            <div 
               className="mt-4 inline-flex items-center px-4 py-2 rounded-full text-sm font-medium"
               style={{
                 background: 'linear-gradient(135deg, #2673a5, #1e5a8a)',
@@ -543,17 +570,17 @@ export default function HomePage() {
               })()}
             </div>
           </div>
-
+          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {popularDestinations.map((destination) => (
-              <Card
+              <Card 
                 key={destination.name}
                 className="group cursor-pointer overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2"
                 onClick={() => handleQuickSearch(destination.name)}
               >
                 <div className="relative h-48 overflow-hidden">
-                  <img
-                    src={destination.image}
+                  <img 
+                    src={destination.image} 
                     alt={destination.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
@@ -654,7 +681,7 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials */}
-      <section
+      <section 
         className="py-20"
         style={{
           background: 'linear-gradient(135deg, #f0f8ff 0%, #e0f2fe 100%)'
@@ -699,8 +726,8 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 text-white" style={{
-        background: 'linear-gradient(to right, #2673a5, #1e5a8a)'
+      <section className="py-20 text-white" style={{ 
+        background: 'linear-gradient(to right, #2673a5, #1e5a8a)' 
       }}>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
@@ -709,7 +736,7 @@ export default function HomePage() {
           <p className="text-xl mb-8 text-blue-100">
             Join 1000+ happy guests who found their perfect villa with us
           </p>
-
+          
           <div className="group flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button
               size="lg"
@@ -720,27 +747,35 @@ export default function HomePage() {
                 }
               }}
               className="hover:bg-gray-100 text-lg px-8 py-4 h-auto"
-              style={{
-                background: 'white',
-                color: '#2673a5'
+              style={{ 
+                background: 'white', 
+                color: '#2673a5' 
               }}
             >
               <Search className="w-5 h-5 mr-2" />
               Search Villas Now
             </Button>
-
+            
             <Button
               size="lg"
+              variant="outline"
               onClick={() => {
                 const whatsappUrl = `https://wa.me/919270355968?text=${encodeURIComponent("Hi! I want to book a villa for my vacation. Can you help me with available options?")}`
                 window.open(whatsappUrl, '_blank')
               }}
-              className="text-lg px-8 py-4 h-auto transition-all duration-300 font-semibold hover:bg-white hover:text-blue-600 hover:shadow-lg"
+              className="text-lg px-8 py-4 h-auto transition-all duration-300"
               style={{
-                background: 'rgba(255, 255, 255, 0.15)',
-                border: '2px solid white',
-                color: 'white',
-                backdropFilter: 'blur(10px)'
+                borderColor: 'white',
+                backgroundColor: 'transparent',
+                color: 'white'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'white'
+                e.currentTarget.style.color = '#2673a5'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent'
+                e.currentTarget.style.color = 'white'
               }}
             >
               <MessageCircle className="w-5 h-5 mr-2" />
@@ -758,7 +793,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer
+      <footer 
         className="text-white py-12"
         style={{
           background: 'linear-gradient(135deg, #1e293b 0%, #2673a5 100%)'
@@ -767,7 +802,7 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3
+              <h3 
                 className="text-2xl font-bold mb-4"
                 style={{
                   background: 'linear-gradient(135deg, #2673a5, #1e5a8a)',
@@ -799,13 +834,13 @@ export default function HomePage() {
                 </Button>
               </div>
             </div>
-
+            
             <div>
               <h4 className="font-semibold mb-4">Popular Destinations</h4>
               <ul className="space-y-2 text-gray-400">
                 {POPULAR_LOCATIONS.slice(0, 5).map(location => (
                   <li key={location}>
-                    <button
+                    <button 
                       onClick={() => handleQuickSearch(location)}
                       className="hover:text-white transition-colors"
                     >
@@ -815,7 +850,7 @@ export default function HomePage() {
                 ))}
               </ul>
             </div>
-
+            
             <div>
               <h4 className="font-semibold mb-4">Villa Owners</h4>
               <ul className="space-y-2 text-gray-400">
@@ -825,7 +860,7 @@ export default function HomePage() {
                 <li><span>Easy Management</span></li>
               </ul>
             </div>
-
+            
             <div>
               <h4 className="font-semibold mb-4">Support</h4>
               <ul className="space-y-2 text-gray-400">
@@ -846,7 +881,7 @@ export default function HomePage() {
               </ul>
             </div>
           </div>
-
+          
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
             <p>&copy; 2025 VillaRent by Namaha Stays. All rights reserved.</p>
             <p className="mt-2 text-sm">Making dream vacations accessible • Trusted by 1000+ guests</p>
@@ -870,6 +905,160 @@ export default function HomePage() {
         >
           <MessageCircle className="w-6 h-6" />
         </Button>
+=======
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center">
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+            Find Your Perfect
+            <span className="text-indigo-600"> Villa Getaway</span>
+          </h1>
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            Discover premium villas in beautiful locations. Easy booking, transparent pricing, 
+            and unforgettable experiences await you.
+          </p>
+        </div>
+
+        {/* Enhanced Search Card */}
+        <Card className="max-w-4xl mx-auto mb-16">
+          <CardHeader>
+            <CardTitle>Search Villas</CardTitle>
+            <CardDescription>Find the perfect villa for your next vacation</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <Label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+                  Location *
+                </Label>
+                <Select onValueChange={(value) => setSearchData(prev => ({ ...prev, location: value }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Location" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {POPULAR_LOCATIONS.map(location => (
+                      <SelectItem key={location} value={location}>
+                        {location}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="checkIn" className="block text-sm font-medium text-gray-700 mb-2">
+                  Check-in *
+                </Label>
+                <Input
+                  id="checkIn"
+                  type="date" 
+                  value={searchData.checkIn}
+                  onChange={(e) => setSearchData(prev => ({ ...prev, checkIn: e.target.value }))}
+                  min={new Date().toISOString().split('T')[0]}
+                  className="w-full"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="checkOut" className="block text-sm font-medium text-gray-700 mb-2">
+                  Check-out *
+                </Label>
+                <Input
+                  id="checkOut"
+                  type="date"
+                  value={searchData.checkOut}
+                  onChange={(e) => setSearchData(prev => ({ ...prev, checkOut: e.target.value }))}
+                  min={searchData.checkIn || new Date().toISOString().split('T')[0]}
+                  className="w-full"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="guests" className="block text-sm font-medium text-gray-700 mb-2">
+                  Guests *
+                </Label>
+                <Select onValueChange={(value) => setSearchData(prev => ({ ...prev, guests: parseInt(value) }))}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="1 Guest" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1,2,3,4,5,6,7,8,9,10,15,20].map(num => (
+                      <SelectItem key={num} value={num.toString()}>
+                        {num} Guest{num > 1 ? 's' : ''}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            <div className="mt-6">
+              <Button onClick={handleSearch} className="w-full md:w-auto px-8 py-3 text-lg">
+                View Villas
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Popular Locations */}
+        <div className="mb-16">
+          <h2 className="text-2xl font-bold text-center mb-8">Popular Destinations</h2>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {POPULAR_LOCATIONS.slice(0, 5).map(location => (
+              <button
+                key={location}
+                onClick={() => {
+                  setSearchData(prev => ({ ...prev, location }))
+                }}
+                className="p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow text-center"
+              >
+                <div className="text-sm font-medium text-gray-900">{location}</div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Features */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                🏡 Premium Villas
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600">
+                Handpicked luxury villas with modern amenities and stunning views
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                🗓️ Easy Management
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600">
+                Villa owners can easily manage bookings with our intuitive calendar system
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                ⚡ No Registration Required
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-600">
+                Browse and book villas without creating an account. Your privacy matters to us.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+>>>>>>> a699f2ce85b82f4dd9192ea30d61277b19ffa3d3
       </div>
     </div>
   )

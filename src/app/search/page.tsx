@@ -194,11 +194,7 @@ function SearchContent() {
     const message = `Hi! I'm interested in booking the following villa(s) for ${format(new Date(checkIn!), 'MMM dd, yyyy')} to ${format(new Date(checkOut!), 'MMM dd, yyyy')} for ${guests} guest(s):\n\n${selectedVillaDetails.map(villa => `🏡 ${villa.name}\n📍 ${villa.location}\n💰 ₹${getPriceForDate(villa, checkIn!).toLocaleString()}/night (${getDayName(checkIn!)})\n`).join('\n')}\n\nPlease share availability and booking details. Thank you!`
 
     // Send message directly to your WhatsApp number (same as Book via WhatsApp)
-<<<<<<< HEAD
     const whatsappUrl = `https://wa.me/919270355968?text=${encodeURIComponent(message)}`
-=======
-    const whatsappUrl = `https://wa.me/919168355968?text=${encodeURIComponent(message)}`
->>>>>>> a699f2ce85b82f4dd9192ea30d61277b19ffa3d3
     window.open(whatsappUrl, '_blank')
   }
 
